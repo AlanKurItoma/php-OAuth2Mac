@@ -54,16 +54,16 @@ class OAuth2MacTokenUtil {
      * @param string $ext "ext" "Authorization" request header field attribute
      * @return string
      */
-    public static function generateMac($key_id, $key, $algorithm, $iss, $nonce=null, $method, $url, $bodyhash=null, $ext=null) {
+    public static function generateMac($key_id, $key, $algorithm, $timestamp, $nonce=null, $method, $url, $bodyhash=null, $ext=null) {
 
         // Check MAC Credentials
-        if (empty($key_id) || empty($key) || empty($algorithm) || (empty($nonce) && empty($iss))) {
+        if (empty($key_id) || empty($key) || empty($algorithm) || (empty($nonce) && empty($timestamp))) {
             throw new Exception('Missing MAC Credentials');
         }
 
         // Process nonce
         if (empty($nonce)) {
-            $nonce = OAuth2Util::generateNonceStr($iss);
+            $nonce = OAuth2Util::generateNonceStr($timestamp);
         }
 
         // Check request data
@@ -95,12 +95,12 @@ class OAuth2MacTokenUtil {
             $request_uri = substr($url,strpos($url,$urlinfo['path']));
         }
 
-        $basestr = $nonce . "\n" .
+        $basestr = $timestamp . "\n" .
+                $nonce . "\n" .
                 $method . "\n" .
                 $request_uri . "\n" .
                 $host . "\n" .
                 $port . "\n" .
-                $bodyhash . "\n" .
                 $ext . "\n";
         return self::_calculateMac($basestr, $key, $algorithm);
     }

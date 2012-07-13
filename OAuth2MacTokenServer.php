@@ -81,6 +81,10 @@ class OAuth2MacTokenServer {
         $this->_secret = $secret;
     }
 
+    public function setRequestURL($urly) {
+        $this->_url = $urly;
+    }
+
     public function setAlgorithm($algorithm) {
         $this->_algorithm = $algorithm;
     }
@@ -118,7 +122,6 @@ class OAuth2MacTokenServer {
      */
     private function parseAuthZHeader() {
         $authZstr = self::getAuthZHeader($this->_headers);
-        echo ("Auth string: " . $authZstr . "\n");
         if (empty($authZstr) || substr($authZstr, 0, 4) != 'MAC ') {
             $this->_enabled = false;
             $this->_code = 'HTTP/1.1 400 Bad Request';
@@ -132,7 +135,6 @@ class OAuth2MacTokenServer {
             $value = trim(substr($param, strpos($param, '=') + 1), '"');
             $authZparams[$key] = $value;
         }
-        echo (var_dump($authZparams));
         $this->_id = $authZparams['id'];
         $this->_timestamp = (int) $authZparams['ts'];
         $this->_nonce = $authZparams['nonce'];
@@ -146,7 +148,7 @@ class OAuth2MacTokenServer {
         if (empty($this->_secret) || empty($this->_algorithm)) {
             throw new Exception('Missing MAC Credential(secret/algorithm)');
         }
-        $cal_signature = OAuth2MacTokenUtil::generateSignature($this->_id, $this->_secret, $this->_algorithm, $this->_timestamp, $this->_nonce, $this->_method, $this->_url, $this->_entitybody);
+        $cal_signature = OAuth2MacTokenUtil::generateMac($this->_id, $this->_secret, $this->_algorithm, $this->_timestamp, $this->_nonce, $this->_method, $this->_url, $this->_entitybody);
         if ($this->_signature != $cal_signature) {
             $this->_enabled = false;
             $this->_code = 'HTTP/1.1 401 Unauthorized';
