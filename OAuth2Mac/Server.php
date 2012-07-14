@@ -164,7 +164,7 @@ class Server {
         if (empty($this->_secret) || empty($this->_algorithm)) {
             throw new Exception('Missing MAC Credential(secret/algorithm)');
         }
-        $cal_signature = OAuth2MacTokenUtil::generateMac($this->_id, $this->_secret, $this->_algorithm, $this->_timestamp, $this->_nonce, $this->_method, $this->_url, $this->_entitybody);
+        $cal_signature = OAuth2MacTokenUtil::generateMac($this->_id, $this->_secret, $this->_algorithm, $this->_timestamp, $this->_nonce, $this->_method, $this->_url);
         if ($this->_signature != $cal_signature) {
             $this->_enabled = false;
             $this->_code = 'HTTP/1.1 401 Unauthorized';
