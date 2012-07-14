@@ -1,11 +1,11 @@
-<?php
+<?php namespace OAuth2Mac
 
-include_once("lib/OAuth2MacTokenUtil.php");
+include_once("Util.php");
 
 /**
  * OAuth 2.0 MAC Token Client Class
  */
-class OAuth2MacTokenClient {
+class Client {
 
     // MAC Token Info
     private $_token;

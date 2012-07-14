@@ -1,6 +1,6 @@
-<?php
+<?php namespace OAuth2Mac
 
-include_once("lib/OAuth2MacTokenUtil.php");
+include_once("Util.php");
 
 /**
  * OAuth 2.0 MAC Token Resource Server Class
@@ -11,7 +11,7 @@ include_once("lib/OAuth2MacTokenUtil.php");
  * @todo Well-formed checks need to be extended to be fully compatible with the draft
  *
  */
-class OAuth2MacTokenServer {
+class Server {
 
     // Headers sent with the request
     private $_headers = array();
