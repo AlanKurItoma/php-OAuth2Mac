@@ -21,6 +21,7 @@ The source files are reasonably easy to work out the usage from, and I haven't r
 		$server->validateSignature();
 
 ## Caveats
+  - I've only really been using the `Server`; so the `Client` and examples should be considered untested.
   - This only validates the request or generates the signatures. It doesn't access a database to retrieve the secret key information, or validate the non-repetition of nonces.
   - Timestamp checking is only done manually - `Server::validateTimestamp` should be called with the fuzz value that you want.
   - Key distribution is completely out of scope of this package
