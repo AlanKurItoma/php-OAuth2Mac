@@ -13,12 +13,16 @@ This is MAC Authentication Utility Class Library for the [draft OAuth 2.0 relate
 The source files are reasonably easy to work out the usage from, and I haven't removed all cruft and tested everything yet. Here's how I'm using it:
 
 		include_once("OAuth2Mac/Server.php");
+    use OAuth2Mac\Server as Server;
 
-		$server = new OAuth2MacTokenServer();
+		$server = new Server();
 		$server->setSecret("489dks293j39");
 		$server->setAlgorithm("hmac-sha-1");
 		$server->setRequestURL("http://example.com:80/resource/1?b=1&a=2");
 		$server->validateSignature();
+
+    if ($server->getStatus()) {
+        ......
 
 ## Caveats
   - I've only really been using the `Server`; so the `Client` and examples should be considered untested.
