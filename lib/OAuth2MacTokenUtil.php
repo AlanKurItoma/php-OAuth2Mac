@@ -10,24 +10,23 @@ class OAuth2MacTokenUtil {
      * @param string $key_id MAC key identifier
      * @param string $key MAC key
      * @param string $algorithm MAC algorithm
-     * @param int $iss Issue time
+     * @param int $timestamp Timestamp of request
      * @param string $nonce
      * @param string $method
      * @param string $url
-     * @param string $entitybody request payload body
      * @param string $ext "ext" "Authorization" request header field attribute
      * @return string
      */
-    public static function genetateAuthZHeader($key_id, $key, $algorithm, $iss, $nonce=null, $method, $url, $entitybody=null, $ext=null) {
+    public static function genetateAuthZHeader($key_id, $key, $algorithm, $timestamp, $nonce=null, $method, $url, $ext=null) {
 
         // Check MAC Credentials
-        if (empty($key_id) || empty($key) || empty($algorithm) || (empty($nonce) && empty($iss))) {
+        if (empty($key_id) || empty($key) || empty($algorithm) || (empty($nonce) && empty($timestamp))) {
             throw new Exception('Missing MAC Credentials');
         }
 
         // Process nonce
         if (empty($nonce)) {
-            $nonce = OAuth2Util::generateNonceStr($iss);
+            $nonce = OAuth2Util::generateNonceStr($timestamp);
         }
 
         // Check request data
@@ -36,9 +35,8 @@ class OAuth2MacTokenUtil {
         }
 
         // Process entity-body
-        $bodyhash = (!empty($entitybody)) ? self::generateBodyhash($entitybody, $algorithm) : "";
-        $mac = self::generateMac($key_id, $key, $algorithm, $iss, $nonce, $method, $url, $bodyhash, $ext);
-        return self::_buildAuthZHeaderStr($key_id, $nonce, $bodyhash, $ext, $mac);
+        $mac = self::generateMac($key_id, $key, $algorithm, $timestamp, $nonce, $method, $url, $ext);
+        return self::_buildAuthZHeaderStr($key_id, $nonce, $ext, $mac);
     }
 
     /**
@@ -46,15 +44,14 @@ class OAuth2MacTokenUtil {
      * @param string $key_id MAC key identifier
      * @param string $key MAC key
      * @param string $algorithm MAC algorithm
-     * @param int $iss Issue time
+     * @param int $timestamp
      * @param string $nonce
      * @param string $method
      * @param string $url
-     * @param string $bodyhash request payload body hash
      * @param string $ext "ext" "Authorization" request header field attribute
      * @return string
      */
-    public static function generateMac($key_id, $key, $algorithm, $timestamp, $nonce=null, $method, $url, $bodyhash=null, $ext=null) {
+    public static function generateMac($key_id, $key, $algorithm, $timestamp, $nonce=null, $method, $url, $ext=null) {
 
         // Check MAC Credentials
         if (empty($key_id) || empty($key) || empty($algorithm) || (empty($nonce) && empty($timestamp))) {
@@ -106,69 +103,19 @@ class OAuth2MacTokenUtil {
     }
 
     /**
-     * Generate Request Body Hash String
-     * @param string $entitybody
-     * @param string $algorithm
-     * @return string
-     */
-    public static function generateBodyhash($entitybody, $algorithm) {
-        $bodyhash = "";
-        switch ($algorithm) {
-            case 'hmac-sha-1':
-                $bodyhash = base64_encode(hash('sha1', $entitybody, true));
-                break;
-            case 'hmac-sha-256':
-                $bodyhash = base64_encode(hash('sha256', $entitybody, true));
-                break;
-            // Please add other algorithm to here
-            default:
-                throw new Exception('Unknown Algorithm');
-            //break;
-        }
-        return $bodyhash;
-    }
-
-    /**
-     * Generate Signature String from Signature Base String
-     * @param string $basestr
-     * @param string $key
-     * @param string $algorithm
-     * @return string
-     */
-    private static function _calculateMac($basestr, $key, $algorithm) {
-        $mac = "";
-        switch ($algorithm) {
-            case 'hmac-sha-1':
-                // hmac-sha-1
-                $mac = base64_encode(hash_hmac('sha1', $basestr, $key, true));
-                break;
-            case 'hmac-sha-256':
-                // hmac-sha-256
-                $mac = base64_encode(hash_hmac('sha256', $basestr, $key, true));
-                break;
-            // Please add other algorithm to here
-            default:
-                throw new Exception('Unknown Algorithm');
-                //break;
-        }
-        return $mac;
-    }
-
-    /**
      * Generate Authorization Header Request String from Paramaters
      * @param string $key_id
      * @param string $nonce
-     * @param string $bodyhash
+     * @param int $timestamp
      * @param string $ext
      * @param string $mac
      * @return string
      */
-    private static function _buildAuthZHeaderStr($key_id, $nonce, $bodyhash, $ext, $mac) {
+    private static function _buildAuthZHeaderStr($key_id, $nonce, $timestamp, $ext, $mac) {
         $header = 'Authorization: MAC id="' . $key_id . '",';
         $header .= 'nonce="' . $nonce . '",';
-        If (!empty($bodyhash)) {
-            $header .= 'bodyhash="' . $bodyhash . '",';
-        }
+        $header .= 'ts="' . $timestamp . '",';
+
         If (!empty($ext)) {
             $header .= 'ext="' . $ext . '",';
         }
