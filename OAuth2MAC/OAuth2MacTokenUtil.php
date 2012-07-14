@@ -1,7 +1,12 @@
 <?php
+/** @package OAuth2MAC  Provides useful classes and functionality for 
+  *                     creating and validating MAC signatures.
+  */
 
 /**
  * OAuth 2.0 MAC Token Utility Class
+ *
+ * Generates MAC signatures from supplied information
  */
 class OAuth2MacTokenUtil {
 
@@ -125,13 +130,13 @@ class OAuth2MacTokenUtil {
 
 }
 
+/**
+  * Basic utility functions for the MAC generation
+  */
 class OAuth2Util {
 
-    public static function generateAge($iss, $current = null) {
-        if (is_null($current)) {
-            $current = time();
-        }
-        return $current - $iss;
+    public static function generateTimestamp() {
+        $current = time();
     }
 
     public static function generateRandStr() {
@@ -143,22 +148,5 @@ class OAuth2Util {
     public static function generateNonceStr($iss, $current = null) {
         return self::generateAge($iss, $current) . ":" . self::generateRandStr();
     }
-
-    /*
-    public static function urlencodeRFC3986($string) {
-        if (is_string($string)) {
-            return str_replace('%7E', '~', rawurlencode($string));
-        } else {
-            return "";
-        }
-    }
-
-    public static function urldecodeRFC3986($string) {
-        if (is_string($string)) {
-            return rawurldecode($string);
-        } else {
-            return "";
-        }
-    }
-    */
 }
+

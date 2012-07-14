@@ -4,6 +4,12 @@ include_once("lib/OAuth2MacTokenUtil.php");
 
 /**
  * OAuth 2.0 MAC Token Resource Server Class
+ *
+ * Extracts information from the current request, and validates the
+ * message is well formed and properly signed.
+ *
+ * @todo Well-formed checks need to be extended to be fully compatible with the draft
+ *
  */
 class OAuth2MacTokenServer {
 
