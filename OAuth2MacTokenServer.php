@@ -7,22 +7,27 @@ include_once("lib/OAuth2MacTokenUtil.php");
  */
 class OAuth2MacTokenServer {
 
+    // Headers sent with the request
     private $_headers = array();
+    // Whether any tests/auths have failed
     private $_enabled = true;
+    // Algorithm to use. hmac-sha-1 or hmac-sha-256
+    private $_algorithm = "hmac-sha-1";    
+    // Data for the signature comparisons
     private $_id = null;
     private $_secret = null;
-    private $_algorithm = null;
     private $_timestamp = null;
     private $_nonce = null;
-    private $_signature = null;
     private $_method = null;
     private $_url = null;
-    private $_entitybody = null;
-    private $_error = null;
+    private $_signature = null;
     private $_realm = null;
+    // In case of an error, this is the HTTP code and message
+    private $_error = null;
     private $_code = null;
 
     public function __construct() {
+        // Read as much information from the request as possible
         $this->_realm = self::getRequestHost();
         $this->_headers = apache_request_headers();
         $this->_method = self::getRequestMethod();
@@ -53,6 +58,9 @@ class OAuth2MacTokenServer {
         }
     }
 
+    /*
+     * Setters and Getters
+     */
     public function getStatus() {
         return $this->_enabled;
     }
@@ -69,11 +77,7 @@ class OAuth2MacTokenServer {
         return $this->_nonce;
     }
 
-    public function getBodyHash() {
-        return $this->_bodyhash;
-    }
-
-    public function getMethod() {
+    public function getHTTPMethod() {
         return $this->_method;
     }
 
@@ -118,7 +122,7 @@ class OAuth2MacTokenServer {
     }
 
     /**
-     * Parse AuthZ Header and set params
+     * Parse AuthZ Header and set parameters from the Authorization string
      */
     private function parseAuthZHeader() {
         $authZstr = self::getAuthZHeader($this->_headers);
@@ -143,6 +147,12 @@ class OAuth2MacTokenServer {
 
     /**
      * Validate signature param
+     *
+     * Uses all class information to validate if the supplied signature is valid.
+     * Sets the internal status flag, which can be retrieved with getStatus.
+     *
+     * @see OAuth2MacTokenServer::getStatus()
+     *
      */
     public function validateSignature() {
         if (empty($this->_secret) || empty($this->_algorithm)) {
@@ -157,8 +167,9 @@ class OAuth2MacTokenServer {
     }
 
     /**
-     * Validate timestamp param
-     * @param string $validsec
+     * Validate timestamp paramater
+     *
+     * @param string $validsec How many seconds 'fuzz' to allow timestamps through with
      */
     public function validateTimestamp($validsec) {
         if (($this->_timestamp > OAuth2Util::generateTimestamp() + (int) $validsec) ||
