@@ -128,6 +128,31 @@ class OAuth2MacTokenUtil {
         return $header;
     }
 
+    /**
+     * Generate Signature String from Signature Base String
+     * @param string $basestr
+     * @param string $key
+     * @param string $algorithm
+     * @return string
+     */
+    private static function _calculateMac($basestr, $key, $algorithm) {
+        $mac = "";
+        switch ($algorithm) {
+            case 'hmac-sha-1':
+                // hmac-sha-1
+                $mac = base64_encode(hash_hmac('sha1', $basestr, $key, true));
+                break;
+            case 'hmac-sha-256':
+                // hmac-sha-256
+                $mac = base64_encode(hash_hmac('sha256', $basestr, $key, true));
+                break;
+            // Please add other algorithm to here
+            default:
+                throw new Exception('Unknown Algorithm');
+                //break;
+        }
+        return $mac;
+    }
 }
 
 /**
