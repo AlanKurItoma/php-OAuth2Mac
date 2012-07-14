@@ -1,4 +1,4 @@
-<?php namespace OAuth2Mac
+<?php namespace OAuth2Mac;
 
 include_once("Util.php");
 

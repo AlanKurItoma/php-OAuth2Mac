@@ -1,4 +1,4 @@
-<?php namespace OAuth2Mac
+<?php namespace OAuth2Mac;
 /** @package OAuth2MAC  Provides useful classes and functionality for 
   *                     creating and validating MAC signatures.
   */
