@@ -60,7 +60,7 @@ class OAuth2MacTokenUtil {
 
         // Check MAC Credentials
         if (empty($key_id) || empty($key) || empty($algorithm) || (empty($nonce) && empty($timestamp))) {
-            throw new Exception('Missing MAC Credentials');
+            throw new \Exception('Missing MAC Credentials');
         }
 
         // Process nonce
@@ -70,7 +70,7 @@ class OAuth2MacTokenUtil {
 
         // Check request data
         if (empty($method) || empty($url)) {
-            throw new Exception('Missing Params');
+            throw new \Exception('Missing Params');
         }
 
         $host = "";
