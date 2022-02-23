@@ -1,0 +1,7 @@
+{
+  "name": "AlanKurItoma/php-OAuth2Mac",
+  "description": "PHO OAuth2Mac",
+  "type": "library",
+  "license": "GPL-3.0-only",
+  "require": {}
+}
